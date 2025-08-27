@@ -96,7 +96,7 @@ export const FrontViewV2 = async (tableId, tableName) => {
         '    // Buat parameter URL untuk pencarian\n' +
         '    let urlParam = globalFilter.value ? `&name=${globalFilter.value}` : "";\n' +
         '    try {\n' +
-        '        const { data } = await custumFetch.get(`/' + tablenameLowerV2 + 's/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {\n' +
+        '        const { data } = await custumFetch.get(`/' + tablenameLowerV2.replace('_', '') + 's/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {\n' +
         '            withCredentials: true,\n' +
         '            headers: { "X-API-TOKEN": await getToken() },\n' +
         '        });\n' +
@@ -138,7 +138,7 @@ export const FrontViewV2 = async (tableId, tableName) => {
         '// Fungsi untuk menghapus item\n' +
         'const deleteItem = async () => {\n' +
         '    try {\n' +
-        '        await custumFetch.delete(`/' + tablenameV2 + 's/${itemToDelete.value.id}`, {\n' +
+        '        await custumFetch.delete(`/' + tablenameLowerV2.replace('_', '') + 's/${itemToDelete.value.id}`, {\n' +
         '            withCredentials: true,\n' +
         '            headers: { "X-API-TOKEN": await getToken() },\n' +
         '        });\n' +
@@ -156,13 +156,13 @@ export const FrontViewV2 = async (tableId, tableName) => {
         'const handleSave = async (itemData) => {\n' +
         '    try {\n' +
         '        if (itemData.id) { // Jika ada ID, lakukan UPDATE\n' +
-        '            await custumFetch.put(`/' + tablenameLowerV2 + 's/${itemData.id}`, itemData, {\n' +
+        '            await custumFetch.put(`/' + tablenameLowerV2.replace('_', '') + 's/${itemData.id}`, itemData, {\n' +
         '                withCredentials: true,\n' +
         '                headers: { "X-API-TOKEN": await getToken() },\n' +
         '            });\n' +
         '            toast.add({ severity: \'success\', summary: \'Successful\', detail: \'' + tablenameV2 + ' Updated\', life: 3000 });\n' +
         '        } else { // Jika tidak ada ID, lakukan CREATE\n' +
-        '            await custumFetch.post("/' + tablenameV2 + 's", itemData, {\n' +
+        '            await custumFetch.post("/' + tablenameLowerV2.replace('_', '') + 's", itemData, {\n' +
         '                withCredentials: true,\n' +
         '                headers: { "X-API-TOKEN": await getToken() },\n' +
         '            });\n' +
@@ -309,24 +309,24 @@ export const FrontFormDialogV2 = async (tableId, tableName) => {
         if (element.type == 'Varchar') {
             FrontFormDialogV2 = FrontFormDialogV2 + '<div>\n' +
                 '                        <label for="' + element.name + '" class="block font-bold mb-3">' + await firstUpper(element.name) + '</label>\n' +
-                '                        <InputText rows="5" id="' + element.name + '" v-model.trim="item.' + element.name + '" required="false" fluid />\n' +
-                '                        <small v-if="submitted && !item.' + element.name + '" class="text-red-500">' + element.name + ' is required.</small>\n' +
+                '                        <InputText rows="5" id="' + element.name + '" v-model.trim="props.item.' + element.name + '" required="false" fluid />\n' +
+                '                        <small v-if="submitted && !props.item.' + element.name + '" class="text-red-500">' + element.name + ' is required.</small>\n' +
                 '                    </div>\n'
         }
         if (element.type == 'Date') {
             FrontFormDialogV2 = FrontFormDialogV2 + '<div>\n' +
                 '                        <label for="' + element.name + '" class="block font-bold mb-3">' + await firstUpper(element.name) + '</label>\n' +
-                '                        <DatePicker :showIcon="true" :showButtonBar="true"rows="5" id="' + element.name + '" v-model.trim="item.' + element.name +
+                '                        <DatePicker :showIcon="true" :showButtonBar="true"rows="5" id="' + element.name + '" v-model.trim="props.item.' + element.name +
                 '" required="false" fluid ></DatePicker> \n' +
-                '                        <small v-if="submitted && !item.' + element.name + '" class="text-red-500">' + element.name + ' is required.</small>\n' +
+                '                        <small v-if="submitted && !props.item.' + element.name + '" class="text-red-500">' + element.name + ' is required.</small>\n' +
                 '                    </div>\n'
         }
         if (element.type == 'Number') {
             FrontFormDialogV2 = FrontFormDialogV2 + '<div>\n' +
                 '                        <label for="' + element.name + '" class="block font-bold mb-3">' + await firstUpper(element.name) + '</label>\n' +
-                '                        <InputNumber :showIcon="true" :showButtonBar="true"rows="5" id="' + element.name + '" v-model.trim="item.' + element.name +
+                '                        <InputNumber :showIcon="true" :showButtonBar="true"rows="5" id="' + element.name + '" v-model.trim="props.item.' + element.name +
                 '" required="false" fluid  showButtons mode="decimal"></InputNumber> \n' +
-                '                        <small v-if="submitted && !item.' + element.name + '" class="text-red-500">' + element.name + ' is required.</small>\n' +
+                '                        <small v-if="submitted && !props.item.' + element.name + '" class="text-red-500">' + element.name + ' is required.</small>\n' +
                 '                    </div>\n\n\n'
         }
     }
@@ -345,7 +345,9 @@ export const FrontFormDialogV2 = async (tableId, tableName) => {
         'import Dialog from \'primevue/dialog\';\n' +
         'import InputText from \'primevue/inputtext\';\n' +
         'import { defineEmits, defineProps, ref, watch } from \'vue\';\n' +
-        'import AlertMessage from \'../components/AlertMessage.vue\';\n\n' +
+        'import AlertMessage from \'../components/AlertMessage.vue\';\n\nconst errorAlert = ref("")\n' +
+        'const errorMsg = ref(false)\n' +
+        'const item = ref({});\n\n' +
 
         '// Menerima props dari parent\n' +
         'const props = defineProps({\n' +
@@ -391,9 +393,9 @@ export const FrontFormDialogV2 = async (tableId, tableName) => {
         'const handleSubmit = () => {\n' +
         '    submitted.value = true;\n' +
         '    // Lakukan validasi sederhana\n' +
-        '    if (formData.value.name && formData.value.desc && formData.value.pic && formData.value.status) {\n' +
+        '    if (props.item.name ) {\n' +
         '        // Kirim event \'save\' ke parent dengan data form\n' +
-        '        emit(\'save\', formData.value);\n' +
+        '        emit(\'save\', props.item);\n' +
         '        closeDialog();\n' +
         '    }\n' +
         '};\n\n' +
@@ -416,9 +418,9 @@ export const Index = async (tableId, tableName) => {
     let index = ''
     index = index +
         '\n//index.js\n\n{\n' +
-        'path: \'/dev/' + tablename + '\',\n' +
-        'name: \'' + await firstUpper(tablename) + '\',\n' +
-        'component: () => import(\'@/views/dev/' + await firstUpper(tableName) + 'View.vue\')\n' +
+        'path: \'/' + tablename + '\',\n' +
+        'name: \'' + tablename + '\',\n' +
+        'component: () => import(\'@/views/' + await firstUpper(tableName) + 'View.vue\')\n' +
         '},\n\n' +
         '//AppMenu.vue \n{ label: \'' + await firstUpper(tablename) + '\', icon: \'pi pi-fw pi-car\', to: { name: \'' + tablename + '\' } }\n\n'
 
@@ -448,7 +450,7 @@ export const Index = async (tableId, tableName) => {
 
     const frontProject = folderFrontend.value + "src" //"/Users/macbook/Mugi_data/workspace/typescript/sakai-vue-crud-generator/src"
     const viewFolder = '/views'
-    index = index + '//Create file' + '\ntouch ' + frontProject + viewFolder + '/dev/' + await firstUpper(tableName) + 'View.vue\n' +
+    index = index + '//Create file' + '\ntouch ' + frontProject + viewFolder + '/' + await firstUpper(tableName) + 'View.vue\n' +
         'touch ' + frontProject + '/components' + '/' + await firstUpper(tableName) + 'Table.vue\n' +
         'touch ' + frontProject + '/components' + '/' + await firstUpper(tableName) + 'FormDialog.vue\n\n'
 

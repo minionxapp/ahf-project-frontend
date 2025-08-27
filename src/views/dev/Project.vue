@@ -148,7 +148,8 @@ const searchData = async () => {
         urlParam = '&name=' + paramCari
     }
     try {
-        const { data } = await custumFetch.get("/dev_projects/?page=" + pageNo.value + '&size=' + rowPerPage.value + urlParam,
+        const { data } = await custumFetch.get("/dev_projects/?page=" + pageNo.value + "&create_by=" + currentUser.username + '&size=' + rowPerPage.value + urlParam,
+            // const { data } = await custumFetch.get("/dev_projects/?create_by=" + currentUser.username,
             {
                 withCredentials: true,
                 headers: {

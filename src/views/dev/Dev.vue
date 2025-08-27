@@ -73,7 +73,8 @@ const submit2 = async () => {
 }
 const allProjects = async () => {
     try {
-        const { data } = await custumFetch.get("/dev_projects/",
+        // const { data } = await custumFetch.get("/dev_projects/",
+        const { data } = await custumFetch.get("/dev_projects/?create_by=" + currentUser.username,
             {
                 withCredentials: true,
                 headers: {

@@ -5,8 +5,8 @@
 <script setup>
 import Message from 'primevue/message';
 const props = defineProps({
-    message:{
-        type :String,
+    message: {
+        type: String,
     },
 })
 

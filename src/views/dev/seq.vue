@@ -171,6 +171,23 @@ const searchData = async () => {
     } catch (error) {
         console.log(error)
     }
+
+
+
+    // try {
+    //     const { data } = await custumFetch.get("/seqs/1",
+    //         {
+    //             withCredentials: true,
+    //             headers: {
+    //                 "X-API-TOKEN": await getToken()
+    //             },
+    //         }
+    //     )
+    //     results.value = data.data
+    //     jmlRows.value = data.paging.total_rows
+    // } catch (error) {
+    //     console.log(error)
+    // }
 }
 function confirmDeleteItem(value) {
     itemDelete.value = value

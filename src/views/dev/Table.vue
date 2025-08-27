@@ -41,6 +41,12 @@
                 <Column field="name" header="Name Table" sortable style="min-width: 16rem"></Column>
                 <Column field="desc" header="Description" sortable style="min-width: 16rem"></Column>
                 <Column field="project_id" header="Project Id" sortable style="min-width: 16rem"></Column>
+                <Column style="min-width: 12rem" header="Nama Project">
+                    <template #body="slotProps">
+
+                        {{ projectName(slotProps.data.project_id) }}
+                    </template>
+                </Column>
                 <Column :exportable="false" style="min-width: 12rem">
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)" />
@@ -143,11 +149,44 @@ const edit = ref(false)
 onMounted(async () => {
     pageNo.value = 1
     await allProjects()
+    await searchDataProjects()
 })
 
 async function onChange() {
     await searchTable()
 }
+
+
+const projects = ref([])
+
+const projectName = (data) => {
+    for (let index = 0; index < projects.value.length; index++) {
+        const element = projects.value[index];
+        if (element.id === data) {
+            return element.name
+        }
+    }
+    // return projects.value
+
+}
+
+const searchDataProjects = async () => {
+    try {
+        const { data } = await custumFetch.get("/dev_projects/?create_by=" + currentUser.username,
+            {
+                withCredentials: true,
+                headers: {
+                    "X-API-TOKEN": await getToken()
+                },
+            }
+        )
+        projects.value = data.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
 
 const searchTable = async () => {
     let urlParam = ""
@@ -168,6 +207,8 @@ const searchTable = async () => {
     }
 }
 
+
+////
 function openNew() {
     item.value = ({})
     submitted.value = false;
@@ -190,7 +231,8 @@ async function onPageChange(event) {
 
 const allProjects = async () => {
     try {
-        const { data } = await custumFetch.get("/dev_projects/",
+        // const { data } = await custumFetch.get("/dev_projects/",
+        const { data } = await custumFetch.get("/dev_projects/?create_by=" + currentUser.username,
             {
                 withCredentials: true,
                 headers: {

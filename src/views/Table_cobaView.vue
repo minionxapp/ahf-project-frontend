@@ -11,10 +11,10 @@
                 </template>
             </Toolbar>
 
-            <BrandTable :items="results" :rowsPerPage="rowPerPage" :totalRecords="jmlRows"
+            <Table_cobaTable :items="results" :rowsPerPage="rowPerPage" :totalRecords="jmlRows"
                 @page-change="handlePageChange" @edit="editItem" @delete="confirmDeleteItem" @search="searchData" />
 
-            <BrandFormDialog v-model:visible="formDialog" :item="item" @save="handleSave" />
+            <Table_cobaFormDialog v-model:visible="formDialog" :item="item" @save="handleSave" />
 
             <DeleteConfirmationDialog v-model:visible="deleteDialog" :itemToDelete="itemToDelete"
                 @confirm="deleteItem" />
@@ -61,7 +61,7 @@ const searchData = async (filterValue) => {
     // Buat parameter URL untuk pencarian
     let urlParam = globalFilter.value ? `&name=${globalFilter.value}` : "";
     try {
-        const { data } = await custumFetch.get(`/brands/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {
+        const { data } = await custumFetch.get(`/tablecobas/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {
             withCredentials: true,
             headers: { "X-API-TOKEN": await getToken() },
         });
@@ -90,6 +90,7 @@ const exportCSV = () => {
 
 // Fungsi untuk membuka dialog form edit
 const editItem = (dataRow) => {
+    alert("edit " + JSON.stringify(dataRow))
     item.value = { ...dataRow }; // Isi data item dengan data yang dipilih
     formDialog.value = true;
 };
@@ -103,11 +104,11 @@ const confirmDeleteItem = (value) => {
 // Fungsi untuk menghapus item
 const deleteItem = async () => {
     try {
-        await custumFetch.delete(`/Brands/${itemToDelete.value.id}`, {
+        await custumFetch.delete(`/tablecobas/${itemToDelete.value.id}`, {
             withCredentials: true,
             headers: { "X-API-TOKEN": await getToken() },
         });
-        toast.add({ severity: 'success', summary: 'Successful', detail: 'Brand Deleted', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Deleted', life: 3000 });
         searchData();
     } catch (error) {
         console.error(error);
@@ -117,26 +118,26 @@ const deleteItem = async () => {
     }
 };
 
-// Fungsi yang dipanggil saat form disubmit (dari BrandFormDialog)
+// Fungsi yang dipanggil saat form disubmit (dari Table_cobaFormDialog)
 const handleSave = async (itemData) => {
     try {
         if (itemData.id) { // Jika ada ID, lakukan UPDATE
-            await custumFetch.put(`/brands/${itemData.id}`, itemData, {
+            await custumFetch.put(`/tablecobas/${itemData.id}`, itemData, {
                 withCredentials: true,
                 headers: { "X-API-TOKEN": await getToken() },
             });
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Brand Updated', life: 3000 });
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Updated', life: 3000 });
         } else { // Jika tidak ada ID, lakukan CREATE
-            await custumFetch.post("/Brands", itemData, {
+            await custumFetch.post("/tablecobas", itemData, {
                 withCredentials: true,
                 headers: { "X-API-TOKEN": await getToken() },
             });
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Brand Created', life: 3000 });
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Created', life: 3000 });
         }
         searchData();
     } catch (error) {
         console.error(error);
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save brand', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save table_coba', life: 3000 });
     } finally {
         formDialog.value = false;
         item.value = {};
