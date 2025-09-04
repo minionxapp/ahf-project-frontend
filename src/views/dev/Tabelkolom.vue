@@ -416,7 +416,7 @@ const handleSubmit = async () => {
                 },
             }
             )
-            console.log(results)
+            // console.log(results)
             formDialog.value = false
             item.value = {}
             toast.add({ severity: 'success', summary: 'Successful', detail: 'Simpan Kolom Success', life: 3000 });

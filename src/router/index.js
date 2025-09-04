@@ -1,9 +1,12 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { useAuthStore } from '@/stores/authStores';
 import { createRouter, createWebHistory } from 'vue-router';
-// import GroupsView from '../views/GroupsView.vue';
 import GroupsView from '../views/dev/GroupView.vue';
 
+// const requiredAuth = (to, from, next) => {
+//     console.log("requiredAuth ::")
+//     alert("testtttt aja")
+// }
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -66,6 +69,48 @@ const router = createRouter({
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
                 },
+                // cp project from
+                {
+                    path: '/akademi',
+                    name: 'akademi',
+                    component: () => import('@/views/AkademiView.vue')
+                },
+                {
+                    path: '/jobfamily',
+                    name: 'jobfamily',
+                    component: () => import('@/views/JobFamilyView.vue')
+                },
+                {
+                    path: '/subjobfamily',
+                    name: 'subjobfamily',
+                    component: () => import('@/views/SubJobFamilyView.vue')
+                },
+                {
+                    path: '/userakademi',
+                    name: 'userakademi',
+                    component: () => import('@/views/UserAkademiView.vue')
+                },
+                {
+                    path: '/level',
+                    name: 'level',
+                    component: () => import('@/views/LevelView.vue')
+                },
+                {
+                    path: '/tipetraining',
+                    name: 'tipetraining',
+                    component: () => import('@/views/TipeTrainingView.vue')
+                },
+                {
+                    path: '/divisi',
+                    name: 'divisi',
+                    component: () => import('@/views/DivisiView.vue')
+                },
+                {
+                    path: '/divisidept',
+                    name: 'divisidept',
+                    component: () => import('@/views/DivisiDeptView.vue')
+                },
+
                 // {
                 //     path: '/uikit/formlayout',
                 //     name: 'formlayout',
@@ -257,6 +302,7 @@ const router = createRouter({
                 {
                     path: '/tablecoba',
                     name: 'tablecoba',
+                    // beforeEnter: console.log("sebelumm table............."),
                     component: () => import('@/views/Table_cobaView.vue')
                 },
                 // Development

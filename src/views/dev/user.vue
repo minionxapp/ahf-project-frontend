@@ -41,6 +41,13 @@
                 <Column field="expired" header="Expired" sortable style="min-width: 4rem">
                     <template #body="slotProps">{{ ((slotProps.data.expired) + "").substring(0, 10) }} </template>
                 </Column>
+
+
+                <Column field="kode_divisi" header="kode_divisi" sortable style="min-width: 4rem"></Column>
+                <Column field="nama_divisi" header="nama_divisi" sortable style="min-width: 4rem"></Column>
+                <Column field="kode_dept" header="kode_dept" sortable style="min-width: 4rem"></Column>
+                <Column field="nama_dept" header="nama_dept" sortable style="min-width: 4rem"></Column>
+
                 <Column :exportable="false" style="min-width: 4rem">
                     <template #body="slotProps">
                         <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editItem(slotProps.data)" />
@@ -109,6 +116,30 @@
                                 optionValue="name" placeholder="Group" class="w-full"></Select>
                             <small v-if="submitted && !item.group" class="text-red-500">group is required.</small>
                         </div>
+
+                        <div>
+                            <label for="kode_divisi" class="block font-bold mb-3">kode_divisi</label>
+                            <!-- <InputText rows="5" id="kode_divisi" v-model.trim="item.kode_divisi" fluid /> -->
+                            <Select id="kode_divisi" v-model="item.kode_divisi" :options="divisis" optionLabel="nama"
+                                @change="setDivisiName()" optionValue="kode" placeholder="Divisi"
+                                class="w-full"></Select>
+                        </div>
+                        <div hidden>
+                            <label for="nama_divisi" class="block font-bold mb-3">nama_divisi</label>
+                            <InputText rows="5" id="nama_divisi" v-model.trim="item.nama_divisi" fluid />
+                        </div>
+                        <div>
+                            <label for="kode_dept" class="block font-bold mb-3">kode_dept</label>
+                            <!-- <InputText rows="5" id="kode_dept" v-model.trim="item.kode_dept" fluid /> -->
+                            <Select id="kode_dept" v-model="item.kode_dept" :options="divDepts" optionLabel="nama"
+                                @change="setDivisiDeptName()" optionValue="kode" placeholder="Divisi"
+                                class="w-full"></Select>
+                        </div>
+                        <div hidden>
+                            <label for="nama_dept" class="block font-bold mb-3">nama_dept</label>
+                            <InputText rows="5" id="nama_dept" v-model.trim="item.nama_dept" fluid />
+                        </div>
+
                         <div>
                             <label for="expired" class="block font-bold mb-3">Expired</label>
                             <DatePicker :showIcon="true" :showButtonBar="true" rows="5" id="expired"
@@ -255,7 +286,11 @@ const handleSubmit = async () => {
                         status: item.value.status,
                         email: item.value.email,
                         group: item.value.group,
-                        expired: (expired)
+                        expired: (expired),
+                        kode_divisi: item.value.kode_divisi,
+                        nama_divisi: item.value.nama_divisi,
+                        kode_dept: item.value.kode_dept,
+                        nama_dept: item.value.nama_dept
                     }, {
                     withCredentials: true,
                     headers: {
@@ -284,7 +319,12 @@ const handleSubmit = async () => {
                     status: item.value.status,
                     email: item.value.email,
                     group: item.value.group,
-                    expired: (expired)
+                    expired: (expired),
+                    kode_divisi: item.value.kode_divisi,
+                    nama_divisi: item.value.nama_divisi,
+                    kode_dept: item.value.kode_dept,
+                    nama_dept: item.value.nama_dept
+
                 }, {
                 withCredentials: true,
                 headers: {
@@ -303,8 +343,10 @@ const handleSubmit = async () => {
 }
 onMounted(async () => {
     pageNo.value = 1
-    searchData()
-    getGroup()
+    await searchData()
+    await getGroup()
+    await getDivisi()
+
 });
 
 
@@ -322,6 +364,43 @@ const getGroup = async () => {
     } catch (error) {
         console.log(error)
     }
+}
+
+const divisis = ref([])
+const getDivisi = async () => {
+    try {
+        const { data } = await custumFetch.get(`/divisis/aktive/Y`, {
+            withCredentials: true,
+            headers: { "X-API-TOKEN": await getToken() },
+        });
+        divisis.value = data.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const setDivisiName = async () => {
+    const foundDivisi = divisis.value.find(jf => jf.kode === item.value.kode_divisi)
+    item.value.nama_divisi = foundDivisi.nama
+    await getDivisiDept()
+}
+const divDepts = ref([])
+const getDivisiDept = async () => {
+    try {
+        const { data } = await custumFetch.get(`/divisidepts/divisi_kode/` + item.value.kode_divisi, {
+            withCredentials: true,
+            headers: { "X-API-TOKEN": await getToken() },
+        });
+        divDepts.value = data.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const setDivisiDeptName = async () => {
+    const foundDivisi = divDepts.value.find(jf => jf.kode === item.value.kode_dept)
+    item.value.nama_dept = foundDivisi.nama
+    await getDivisiDept()
 }
 
 </script>

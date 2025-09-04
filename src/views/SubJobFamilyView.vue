@@ -11,10 +11,11 @@
                 </template>
             </Toolbar>
 
-            <Table_cobaTable :items="results" :rowsPerPage="rowPerPage" :totalRecords="jmlRows"
+            <SubJobFamilyTable :items="results" :rowsPerPage="rowPerPage" :totalRecords="jmlRows"
                 @page-change="handlePageChange" @edit="editItem" @delete="confirmDeleteItem" @search="searchData" />
 
-            <Table_cobaFormDialog v-model:visible="formDialog" :item="item" @save="handleSave" />
+            <SubJobFamilyFormDialog v-model:visible="formDialog" :item="item" :jobfamilys="jobfamilys"
+                @save="handleSave" />
 
             <DeleteConfirmationDialog v-model:visible="deleteDialog" :itemToDelete="itemToDelete"
                 @confirm="deleteItem" />
@@ -52,6 +53,9 @@ const jmlRows = ref(0); // Total baris data dari API
 const rowPerPage = ref(10); // Jumlah baris per halaman
 const globalFilter = ref(null); // Nilai filter pencarian global
 
+
+const jobfamilys = ref([])
+
 // Fungsi untuk mengambil data dari API
 const searchData = async (filterValue) => {
     // Jika ada nilai filter baru, perbarui state
@@ -61,7 +65,7 @@ const searchData = async (filterValue) => {
     // Buat parameter URL untuk pencarian
     let urlParam = globalFilter.value ? `&name=${globalFilter.value}` : "";
     try {
-        const { data } = await custumFetch.get(`/tablecobas/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {
+        const { data } = await custumFetch.get(`/subjobfamilys/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {
             withCredentials: true,
             headers: { "X-API-TOKEN": await getToken() },
         });
@@ -90,8 +94,6 @@ const exportCSV = () => {
 
 // Fungsi untuk membuka dialog form edit
 const editItem = (dataRow) => {
-    // alert("edit " + JSON.stringify(dataRow))
-    // alert(JSON.stringify(autStores.userLogged))
     item.value = { ...dataRow }; // Isi data item dengan data yang dipilih
     formDialog.value = true;
 };
@@ -105,11 +107,11 @@ const confirmDeleteItem = (value) => {
 // Fungsi untuk menghapus item
 const deleteItem = async () => {
     try {
-        await custumFetch.delete(`/tablecobas/${itemToDelete.value.id}`, {
+        await custumFetch.delete(`/subjobfamilys/${itemToDelete.value.id}`, {
             withCredentials: true,
             headers: { "X-API-TOKEN": await getToken() },
         });
-        toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Deleted', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Sub_job_family Deleted', life: 3000 });
         searchData();
     } catch (error) {
         console.error(error);
@@ -119,26 +121,26 @@ const deleteItem = async () => {
     }
 };
 
-// Fungsi yang dipanggil saat form disubmit (dari Table_cobaFormDialog)
+// Fungsi yang dipanggil saat form disubmit (dari Sub_job_familyFormDialog)
 const handleSave = async (itemData) => {
     try {
         if (itemData.id) { // Jika ada ID, lakukan UPDATE
-            await custumFetch.put(`/tablecobas/${itemData.id}`, itemData, {
+            await custumFetch.put(`/subjobfamilys/${itemData.id}`, itemData, {
                 withCredentials: true,
                 headers: { "X-API-TOKEN": await getToken() },
             });
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Updated', life: 3000 });
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Sub_job_family Updated', life: 3000 });
         } else { // Jika tidak ada ID, lakukan CREATE
-            await custumFetch.post("/tablecobas", itemData, {
+            await custumFetch.post("/subjobfamilys", itemData, {
                 withCredentials: true,
                 headers: { "X-API-TOKEN": await getToken() },
             });
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Created', life: 3000 });
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Sub_job_family Created', life: 3000 });
         }
         searchData();
     } catch (error) {
         console.error(error);
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save table_coba', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save sub_job_family', life: 3000 });
     } finally {
         formDialog.value = false;
         item.value = {};
@@ -148,6 +150,22 @@ const handleSave = async (itemData) => {
 // Hook saat komponen dimount
 onMounted(() => {
     searchData();
+    searchDataJobFamily()
 });
 
-</script>
+const searchDataJobFamily = async (filterValue) => {
+    try {
+        const { data } = await custumFetch.get(`/jobfamilys/aktive/Y`, {
+            withCredentials: true,
+            headers: { "X-API-TOKEN": await getToken() },
+        });
+        jobfamilys.value = data.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
+
+
+</script>ß

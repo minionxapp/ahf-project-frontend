@@ -8,6 +8,16 @@ const dropdownProjectItem = ref(null);
 const dropdownTableItems = ref([]);
 const dropdownTableItem = ref(null);
 const result = ref([])
+const resultFront = ref([])
+
+// import custumFetch from '@/api';
+// import { onMounted, ref } from 'vue';
+//untuk tab
+// import { useAuthStore } from '@/stores/authStores';
+import { FrontFormDialogV2, FrontTableV2, FrontViewV2, Index } from '@/stores/frontendStoresV2';
+
+
+
 async function onChange() {
     dropdownTableItems.value = null
     await getTablesByProject((this.dropdownProjectItem).id)
@@ -37,38 +47,48 @@ async function getTablesByProject(value) {
 
 //membuat script tanpa membuat file
 const submit = async () => {
-    const tableId = ((dropdownTableItem.value).id)
-    try {
-        const { data } = await custumFetch.get("/dev/schema/" + tableId + "?createFile=false",
-            {
-                withCredentials: true,
-                headers: {
-                    "X-API-TOKEN": await getToken()
-                },
-            }
-        )
-        result.value = data.data
-    } catch (error) {
-        console.log(error)
+    if (dropdownTableItem.value && dropdownTableItem.value) {
+        const tableId = ((dropdownTableItem.value).id)
+        try {
+            const { data } = await custumFetch.get("/dev/schema/" + tableId + "?createFile=false",
+                {
+                    withCredentials: true,
+                    headers: {
+                        "X-API-TOKEN": await getToken()
+                    },
+                }
+            )
+            result.value = data.data
+        } catch (error) {
+            console.log(error)
+        }
+
+        await front()
+    } else {
+        alert("Project/Table belum dipilih")
     }
 }
 
 //membuat file 
 const submit2 = async () => {
-    const tableId = ((dropdownTableItem.value).id)
-    try {
-        const { data } = await custumFetch.get("/dev/schema/" + tableId + "?createFile=true",
-            {
-                withCredentials: true,
-                headers: {
-                    "X-API-TOKEN": await getToken()
-                },
-            }
-        )
-        result.value = data.data
-        alert("Create Success.......")
-    } catch (error) {
-        console.log(error)
+    if (dropdownTableItem.value && dropdownTableItem.value) {
+        const tableId = ((dropdownTableItem.value).id)
+        try {
+            const { data } = await custumFetch.get("/dev/schema/" + tableId + "?createFile=true",
+                {
+                    withCredentials: true,
+                    headers: {
+                        "X-API-TOKEN": await getToken()
+                    },
+                }
+            )
+            result.value = data.data
+            alert("Create Success.......")
+        } catch (error) {
+            console.log(error)
+        }
+    } else {
+        alert("Project/Table belum dipilih")
     }
 }
 const allProjects = async () => {
@@ -90,6 +110,24 @@ const allProjects = async () => {
 onMounted(async () => {
     await allProjects()
 })
+
+
+//=====================================
+const front = async () => {
+
+    if (dropdownTableItem.value && dropdownTableItem.value) {
+        const tableId = ((dropdownTableItem.value).id)
+        const tableName = ((dropdownTableItem.value).name)
+
+        resultFront.value.front = await FrontViewV2(tableId, tableName)
+        // console.log(resultFront.value.front)
+        resultFront.value.index = await Index(tableId, tableName)
+        resultFront.value.table = await FrontTableV2(tableId, tableName)
+        resultFront.value.formDialog = await FrontFormDialogV2(tableId, tableName)
+    } else {
+        alert("Project/Table belum dipilih")
+    }
+}
 </script>
 
 
@@ -111,8 +149,9 @@ onMounted(async () => {
                         <Select id="state" v-model="dropdownTableItem" :options="dropdownTableItems" optionLabel="name"
                             placeholder="Select Table" class="w-full" @change="onTableChange()"></Select>
                     </div>
-                    <Button label="File Script" :fluid="false" @click="submit()"></Button>
-                    <Button label="Create File" :fluid="false" @click="submit2()"></Button>
+                    <Button label="Back Script" :fluid="false" @click="submit()"></Button>
+                    <Button label="Back File" :fluid="false" @click="submit2()"></Button>
+                    <Button label="Front" :fluid="false" @click="front()"></Button>
                 </div>
                 <Tabs value="0">
                     <TabList>
@@ -125,6 +164,12 @@ onMounted(async () => {
                         <Tab value="6">Util Test</Tab>
                         <Tab value="7">Test</Tab>
                         <Tab value="8">File</Tab>
+                        <Tab value="20">||||||</Tab>
+                        <Tab value="9">F_VIEW</Tab>
+                        <Tab value="10">F_TABLE</Tab>
+                        <Tab value="11">F_DIALOG</Tab>
+                        <Tab value="12">F_FILE</Tab>
+
                     </TabList>
                     <TabPanels>
                         <TabPanel value="0">
@@ -153,7 +198,6 @@ onMounted(async () => {
                             </code>
                         </pre>
                         </TabPanel>
-
                         <TabPanel value="4">
                             <pre>
                             <code>
@@ -186,6 +230,35 @@ onMounted(async () => {
                             <pre>
                             <code>
                                 {{ result.file }}
+                            </code>
+                        </pre>
+                        </TabPanel>
+
+                        <TabPanel value="9">
+                            <pre>
+                            <code>
+                                {{ resultFront.front }}
+                            </code>
+                        </pre>
+                        </TabPanel>
+                        <TabPanel value="10">
+                            <pre>
+                            <code>
+                                {{ resultFront.table }}
+                            </code>
+                        </pre>
+                        </TabPanel>
+                        <TabPanel value="11">
+                            <pre>
+                            <code>
+                                {{ resultFront.formDialog }}
+                            </code>
+                        </pre>
+                        </TabPanel>
+                        <TabPanel value="12">
+                            <pre>
+                            <code>
+                                {{ resultFront.index }}
                             </code>
                         </pre>
                         </TabPanel>

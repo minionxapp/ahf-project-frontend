@@ -11,6 +11,7 @@ export const useAuthStore = defineStore('user', () => {
         return JSON.parse(localStorage.getItem("user")).token
     }
 
+    const userLogged = currentUser
 
     const loginUser = async (inputData) => {
         try {
@@ -49,6 +50,6 @@ export const useAuthStore = defineStore('user', () => {
 
 
 
-    return { loginUser, currentUser, logoutUser, getToken }
+    return { loginUser, currentUser, logoutUser, getToken, userLogged }
 }
 )

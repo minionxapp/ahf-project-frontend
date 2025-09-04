@@ -19,6 +19,22 @@ export const dateFormat = async (tgl) => {
     return dateFormat
 }
 
+/*
+membuat case spt ini Table_kolom_contoh ---> tableKolomContoh
+*/
+
+export const createCamelCase = async (string) => {
+    let myStrings = string.split('_')
+    let camelVar = ''
+
+    for (let index = 0; index < myStrings.length; index++) {
+        const element = myStrings[index];
+        camelVar = camelVar + await firstUpper(element)
+
+    }
+    return camelVar
+}
+
 
 const getAkaByToken = async (token) => {
     return

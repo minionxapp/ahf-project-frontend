@@ -1,7 +1,7 @@
 
 import custumFetch from '@/api';
 import { useAuthStore } from '@/stores/authStores';
-import { firstLower, firstUpper, replaceString } from '@/stores/util';
+import { createCamelCase, firstLower, firstUpper, replaceString } from '@/stores/util';
 import { ref } from 'vue';
 const autStores = useAuthStore();
 const { currentUser, currentToken, getToken } = autStores
@@ -31,7 +31,7 @@ export const FrontViewV2 = async (tableId, tableName) => {
     const tablenameV2 = await firstUpper(tableName)
     const tablenameLowerV2 = await firstLower(tableName)
 
-    let frontViewV2 = '\nVersion V2\n' + tablenameV2 + 'View.vue\n\n'
+    let frontViewV2 = '\n<!--Version V2\n' + tablenameV2 + 'View.vue -->\n\n'
 
     frontViewV2 = frontViewV2 + '<template>\n' +
         '<div>\n' +
@@ -46,10 +46,10 @@ export const FrontViewV2 = async (tableId, tableName) => {
         '</template>\n' +
         '</Toolbar>\n\n' +
 
-        '<' + tablenameV2 + 'Table :items="results" :rowsPerPage="rowPerPage" :totalRecords="jmlRows"\n' +
+        '<' + (await createCamelCase(tableName)) + 'Table :items="results" :rowsPerPage="rowPerPage" :totalRecords="jmlRows"\n' +
         '   @page-change="handlePageChange" @edit="editItem" @delete="confirmDeleteItem" @search="searchData" />\n\n' +
 
-        '<' + tablenameV2 + 'FormDialog v-model:visible="formDialog" :item="item" @save="handleSave" />\n\n' +
+        '<' + (await createCamelCase(tableName)) + 'FormDialog v-model:visible="formDialog" :item="item" @save="handleSave" />\n\n' +
 
         '<DeleteConfirmationDialog v-model:visible="deleteDialog" :itemToDelete="itemToDelete"\n' +
         '   @confirm="deleteItem" />\n' +
@@ -96,7 +96,7 @@ export const FrontViewV2 = async (tableId, tableName) => {
         '    // Buat parameter URL untuk pencarian\n' +
         '    let urlParam = globalFilter.value ? `&name=${globalFilter.value}` : "";\n' +
         '    try {\n' +
-        '        const { data } = await custumFetch.get(`/' + tablenameLowerV2.replace('_', '') + 's/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {\n' +
+        '        const { data } = await custumFetch.get(`/' + (await createCamelCase(tableName)).toLowerCase() + 's/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {\n' +
         '            withCredentials: true,\n' +
         '            headers: { "X-API-TOKEN": await getToken() },\n' +
         '        });\n' +
@@ -138,7 +138,7 @@ export const FrontViewV2 = async (tableId, tableName) => {
         '// Fungsi untuk menghapus item\n' +
         'const deleteItem = async () => {\n' +
         '    try {\n' +
-        '        await custumFetch.delete(`/' + tablenameLowerV2.replace('_', '') + 's/${itemToDelete.value.id}`, {\n' +
+        '        await custumFetch.delete(`/' + (await createCamelCase(tableName)).toLowerCase() + 's/${itemToDelete.value.id}`, {\n' +
         '            withCredentials: true,\n' +
         '            headers: { "X-API-TOKEN": await getToken() },\n' +
         '        });\n' +
@@ -156,31 +156,31 @@ export const FrontViewV2 = async (tableId, tableName) => {
         'const handleSave = async (itemData) => {\n' +
         '    try {\n' +
         '        if (itemData.id) { // Jika ada ID, lakukan UPDATE\n' +
-        '            await custumFetch.put(`/' + tablenameLowerV2.replace('_', '') + 's/${itemData.id}`, itemData, {\n' +
+        '            await custumFetch.put(`/' + (await createCamelCase(tableName)).toLowerCase() + 's/${itemData.id}`, itemData, {\n' +
         '                withCredentials: true,\n' +
         '                headers: { "X-API-TOKEN": await getToken() },\n' +
         '            });\n' +
         '            toast.add({ severity: \'success\', summary: \'Successful\', detail: \'' + tablenameV2 + ' Updated\', life: 3000 });\n' +
         '        } else { // Jika tidak ada ID, lakukan CREATE\n' +
-        '            await custumFetch.post("/' + tablenameLowerV2.replace('_', '') + 's", itemData, {\n' +
+        '            await custumFetch.post("/' + (await createCamelCase(tableName)).toLowerCase() + 's", itemData, {\n' +
         '                withCredentials: true,\n' +
         '                headers: { "X-API-TOKEN": await getToken() },\n' +
         '            });\n' +
         '            toast.add({ severity: \'success\', summary: \'Successful\', detail: \'' + tablenameV2 + ' Created\', life: 3000 });\n' +
         '        }\n' +
         '        searchData();\n' +
+        '        formDialog.value = false;\n' +
+        '        item.value = {};\n' +
         '    } catch (error) {\n' +
         '        console.error(error);\n' +
         '        toast.add({ severity: \'error\', summary: \'Error\', detail: \'Failed to save ' + tablenameLowerV2 + '\', life: 3000 });\n' +
         '    } finally {\n' +
-        '        formDialog.value = false;\n' +
-        '        item.value = {};\n' +
         '    }\n' +
         '};\n\n' +
 
         '// Hook saat komponen dimount\n' +
-        'onMounted(() => {\n' +
-        '    searchData();\n' +
+        'onMounted(async () => {\n' +
+        '    await searchData();\n' +
         '});\n\n' +
         '</script>'
 
@@ -194,7 +194,7 @@ export const FrontTableV2 = async (tableId, tableName) => {
     const tablename = await replaceString(tableName)
     const tablenameV2 = await firstUpper(tableName)
     const tablenameLowerV2 = await firstLower(tableName)
-    let frontTableV2 = '\nVersion V2\n' + tablenameV2 + 'Table.vue\n\n'
+    let frontTableV2 = '\n<!--Version V2\n' + tablenameV2 + 'Table.vue-->\n\n'
 
     frontTableV2 = frontTableV2 + " \n" +
         '<template>\n' +
@@ -218,7 +218,7 @@ export const FrontTableV2 = async (tableId, tableName) => {
         '        </template>\n\n' +
 
         '       <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>\n' +
-        '       <Column field="id" header="Id" sortable style="min-width: 12rem"></Column>\n'
+        '      <!--  <Column field="id" header="Id" sortable style="min-width: 12rem"></Column> -->\n'
 
 
     for (let index = 0; index < koloms.value.length; index++) {
@@ -291,11 +291,11 @@ export const FrontFormDialogV2 = async (tableId, tableName) => {
     const tablename = await replaceString(tableName)
     const tablenameV2 = await firstUpper(tableName)
     const tablenameLowerV2 = await firstLower(tableName)
-    let FrontFormDialogV2 = '\nVersion V2\n' + tablenameV2 + 'FormDialog.vue\n\n'
+    let FrontFormDialogV2 = '\n<!--Version V2\n' + tablenameV2 + 'FormDialog.vue-->\n\n'
 
     FrontFormDialogV2 = FrontFormDialogV2 +
         '<template>\n' +
-        '    <Dialog :visible="visible" :style="{ width: \'450px\' }" :header="dialogHeader" :modal="true">\n' +
+        '    <Dialog :visible="visible" :style="{ width: \'450px\' }" :header="dialogHeader" :modal="true" :closable=false>\n' +
         '        <form @submit.prevent="handleSubmit">\n' +
         '            <div class="flex flex-col gap-6">\n' +
         '                    <AlertMessage v-if="errorAlert" :message="errorMsg" />\n' +
@@ -348,6 +348,7 @@ export const FrontFormDialogV2 = async (tableId, tableName) => {
         'import AlertMessage from \'../components/AlertMessage.vue\';\n\nconst errorAlert = ref("")\n' +
         'const errorMsg = ref(false)\n' +
         'const item = ref({});\n\n' +
+        '//const yesNo = ref([{ name: \'Yes\', code: \'Y\' }, { name: \'No\', code: \'N\' }])\n' +
 
         '// Menerima props dari parent\n' +
         'const props = defineProps({\n' +
@@ -379,11 +380,6 @@ export const FrontFormDialogV2 = async (tableId, tableName) => {
         '    }\n' +
         '});\n\n' +
 
-        '// Fungsi untuk menutup dialog\n' +
-        '// const closeDialog = () => {\n' +
-        '//     emit(\'update:visible\', false);\n' +
-        '// };\n\n' +
-
         'const closeDialog = () => {\n' +
         '    // Panggil emit untuk memberitahu parent agar mengubah nilai visible menjadi false\n' +
         '    emit(\'update:visible\', false);\n' +
@@ -393,18 +389,17 @@ export const FrontFormDialogV2 = async (tableId, tableName) => {
         'const handleSubmit = () => {\n' +
         '    submitted.value = true;\n' +
         '    // Lakukan validasi sederhana\n' +
-        '    if (props.item.name ) {\n' +
+        '    if (props.item.nama ) {\n' +
         '        // Kirim event \'save\' ke parent dengan data form\n' +
         '        emit(\'save\', props.item);\n' +
-        '        closeDialog();\n' +
+        '        //closeDialog();\n' +
         '    }\n' +
         '};\n\n' +
         '</script>\n\n\n\n' +
 
         '<!-- //tambahan untuk select option\n' +
-        '// const yesNo = ref([{ name: \'Yes\', code: \'Y\' }, { name: \'No\', code: \'N\' }])\n' +
-        '//<Select id="aktive" v-model="item.aktive" :options="yesNo" optionLabel="name"\n' +
-        '//optionValue="code" placeholder="Aktive" class="w-full"></Select>\n-->'
+        '<Select id="aktive" v-model="props.item.aktive" :options="yesNo" optionLabel="name"\n' +
+        'optionValue="code" placeholder="Aktive" class="w-full"></Select>\n-->'
 
 
     return FrontFormDialogV2.toString() + ''
@@ -420,7 +415,7 @@ export const Index = async (tableId, tableName) => {
         '\n//index.js\n\n{\n' +
         'path: \'/' + tablename + '\',\n' +
         'name: \'' + tablename + '\',\n' +
-        'component: () => import(\'@/views/' + await firstUpper(tableName) + 'View.vue\')\n' +
+        'component: () => import(\'@/views/' + (await createCamelCase(tableName)) + 'View.vue\')\n' +
         '},\n\n' +
         '//AppMenu.vue \n{ label: \'' + await firstUpper(tablename) + '\', icon: \'pi pi-fw pi-car\', to: { name: \'' + tablename + '\' } }\n\n'
 
@@ -450,12 +445,14 @@ export const Index = async (tableId, tableName) => {
 
     const frontProject = folderFrontend.value + "src" //"/Users/macbook/Mugi_data/workspace/typescript/sakai-vue-crud-generator/src"
     const viewFolder = '/views'
-    index = index + '//Create file' + '\ntouch ' + frontProject + viewFolder + '/' + await firstUpper(tableName) + 'View.vue\n' +
-        'touch ' + frontProject + '/components' + '/' + await firstUpper(tableName) + 'Table.vue\n' +
-        'touch ' + frontProject + '/components' + '/' + await firstUpper(tableName) + 'FormDialog.vue\n\n'
+    index = index + '//Create file' + '\ntouch ' + frontProject + viewFolder + '/' + (await createCamelCase(tableName)) + 'View.vue\n' +
+        'touch ' + frontProject + '/components' + '/' + (await createCamelCase(tableName)) + 'Table.vue\n' +
+        'touch ' + frontProject + '/components' + '/' + (await createCamelCase(tableName)) + 'FormDialog.vue\n\n'
 
     index = index + '//tambahan untuk select option \nconst yesNo = ref([{ name: \'Yes\', code: \'Y\' }, { name: \'No\', code: \'N\' }])\n' +
         '<Select id="aktive" v-model="item.aktive" :options="yesNo" optionLabel="name"\n' +
         'optionValue="code" placeholder="Aktive" class="w-full"></Select>\n'
+
+    console.log(await createCamelCase(tableName))
     return index
 }

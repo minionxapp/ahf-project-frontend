@@ -11,10 +11,10 @@
                 </template>
             </Toolbar>
 
-            <Table_cobaTable :items="results" :rowsPerPage="rowPerPage" :totalRecords="jmlRows"
+            <UserAkademiTable :items="results" :rowsPerPage="rowPerPage" :totalRecords="jmlRows"
                 @page-change="handlePageChange" @edit="editItem" @delete="confirmDeleteItem" @search="searchData" />
 
-            <Table_cobaFormDialog v-model:visible="formDialog" :item="item" @save="handleSave" />
+            <UserAkademiFormDialog v-model:visible="formDialog" :item="item" @save="handleSave" :akademis="akademis" />
 
             <DeleteConfirmationDialog v-model:visible="deleteDialog" :itemToDelete="itemToDelete"
                 @confirm="deleteItem" />
@@ -61,7 +61,7 @@ const searchData = async (filterValue) => {
     // Buat parameter URL untuk pencarian
     let urlParam = globalFilter.value ? `&name=${globalFilter.value}` : "";
     try {
-        const { data } = await custumFetch.get(`/tablecobas/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {
+        const { data } = await custumFetch.get(`/userakademis/?page=${pageNo.value}&size=${rowPerPage.value}${urlParam}`, {
             withCredentials: true,
             headers: { "X-API-TOKEN": await getToken() },
         });
@@ -90,8 +90,6 @@ const exportCSV = () => {
 
 // Fungsi untuk membuka dialog form edit
 const editItem = (dataRow) => {
-    // alert("edit " + JSON.stringify(dataRow))
-    // alert(JSON.stringify(autStores.userLogged))
     item.value = { ...dataRow }; // Isi data item dengan data yang dipilih
     formDialog.value = true;
 };
@@ -105,11 +103,11 @@ const confirmDeleteItem = (value) => {
 // Fungsi untuk menghapus item
 const deleteItem = async () => {
     try {
-        await custumFetch.delete(`/tablecobas/${itemToDelete.value.id}`, {
+        await custumFetch.delete(`/userakademis/${itemToDelete.value.id}`, {
             withCredentials: true,
             headers: { "X-API-TOKEN": await getToken() },
         });
-        toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Deleted', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'User_akademi Deleted', life: 3000 });
         searchData();
     } catch (error) {
         console.error(error);
@@ -119,35 +117,45 @@ const deleteItem = async () => {
     }
 };
 
-// Fungsi yang dipanggil saat form disubmit (dari Table_cobaFormDialog)
+// Fungsi yang dipanggil saat form disubmit (dari User_akademiFormDialog)
 const handleSave = async (itemData) => {
     try {
         if (itemData.id) { // Jika ada ID, lakukan UPDATE
-            await custumFetch.put(`/tablecobas/${itemData.id}`, itemData, {
+            await custumFetch.put(`/userakademis/${itemData.id}`, itemData, {
                 withCredentials: true,
                 headers: { "X-API-TOKEN": await getToken() },
             });
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Updated', life: 3000 });
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'User_akademi Updated', life: 3000 });
         } else { // Jika tidak ada ID, lakukan CREATE
-            await custumFetch.post("/tablecobas", itemData, {
+            await custumFetch.post("/userakademis", itemData, {
                 withCredentials: true,
                 headers: { "X-API-TOKEN": await getToken() },
             });
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Table_coba Created', life: 3000 });
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'User_akademi Created', life: 3000 });
         }
         searchData();
-    } catch (error) {
-        console.error(error);
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save table_coba', life: 3000 });
-    } finally {
         formDialog.value = false;
         item.value = {};
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed ' + error.response.data.errors, life: 3000 });
     }
 };
 
 // Hook saat komponen dimount
-onMounted(() => {
-    searchData();
+onMounted(async () => {
+    await searchData();
+    await searchAkademis();
 });
-
+const akademis = ref([])
+const searchAkademis = async () => {
+    try {
+        const { data } = await custumFetch.get(`/akademis/aktive/Y`, {
+            withCredentials: true,
+            headers: { "X-API-TOKEN": await getToken() },
+        });
+        akademis.value = data.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
 </script>

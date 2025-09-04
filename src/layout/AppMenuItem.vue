@@ -31,7 +31,8 @@ const itemKey = ref(null);
 
 onBeforeMount(() => {
     itemKey.value = props.parentItemKey ? props.parentItemKey + '-' + props.index : String(props.index);
-
+    //untuk validasi menu yuppppp
+    // console.log("item " + props.item.label + ' - ' + (props.item.visible))
     const activeItem = layoutState.activeMenuItem;
     // console.log("testtttt....." + itemKey.value + " active item " + activeItem + '.  ' + layoutState.activeMenuItem)
 

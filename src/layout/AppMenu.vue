@@ -6,30 +6,31 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
     {
         label: 'Home',
-
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
-        { label: 'Logout', icon: 'pi pi-fw pi-home', to: '/logout' }
+        { label: 'Logout', icon: 'pi pi-sign-out', to: '/logout', visible: true }
         ]
     },
     {
         label: 'Admin',
+        visible: true,
         items: [
             {
                 label: 'Parameter', items: [
-                    // { label: 'Status Training', icon: 'pi pi-fw pi-sort-alpha-down', to: { name: 'Statustraining' } },
                     { label: 'Seq', icon: 'pi pi-fw pi-sort-numeric-down', to: { name: 'seq' } },
-                    // { label: 'Tipe Training', icon: 'pi pi-fw pi-car', to: { name: 'tipetraining' } },
-                    // { label: 'Checklist', icon: 'pi pi-fw pi-car', to: { name: 'Checklist' } }
-
-
+                    { label: 'Akademi', icon: 'pi pi-building-columns', to: { name: 'akademi' } },
+                    { label: 'Job Family', icon: 'pi pi-list', to: { name: 'jobfamily' } },
+                    { label: 'Sub Job Family', icon: 'pi pi-list-check', to: { name: 'subjobfamily' } },
+                    { label: 'User Akademi', icon: 'pi pi-address-book', to: { name: 'userakademi' } },
+                    { label: 'Level', icon: 'pi pi-sort-alt-slash', to: { name: 'level' } },
+                    { label: 'Tipe Training', icon: 'pi pi-briefcase', to: { name: 'tipetraining' } },
+                    { label: 'Divisi', icon: 'pi pi-book', to: { name: 'divisi' } },
+                    { label: 'Departement', icon: 'pi pi-fw pi-car', to: { name: 'divisidept' } }
                 ]
             },
             {
                 label: 'User & Group', items: [
                     { label: 'User', icon: 'pi pi-fw pi-user-plus', to: { name: 'user' } },
                     { label: 'Group', icon: 'pi pi-fw pi-users', to: { name: 'group' } },
-                    // { label: 'Akademi', icon: 'pi pi-fw pi-building-columns', to: { name: 'akademi' } },
-                    // { label: 'User Akademi', icon: 'pi pi-fw pi-graduation-cap', to: { name: 'Userakademi' } },
                     { label: 'User Direktory', icon: 'pi pi-fw pi-folder-open', to: { name: 'dev_direktori' } },
                     { label: 'User Project', icon: 'pi pi-fw pi-file-edit', to: { name: 'Userproject' } }
                 ]
@@ -223,9 +224,7 @@ const model = ref([
 
 
 onMounted(async () => {
-    // console.log("menu awal")
-    // console.log(JSON.stringify(model.value))
-    // console.log("menu akhir....")
+    // console.log((model))
 
 })
 </script>
