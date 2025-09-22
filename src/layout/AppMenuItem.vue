@@ -1,5 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
+import { useAuthStore } from '@/stores/authStores';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -32,10 +33,10 @@ const itemKey = ref(null);
 onBeforeMount(() => {
     itemKey.value = props.parentItemKey ? props.parentItemKey + '-' + props.index : String(props.index);
     //untuk validasi menu yuppppp
-    // console.log("item " + props.item.label + ' - ' + (props.item.visible))
+    // console.log("xxxxxx--------->>>item " + props.item.label + ' - ' + (props.item.visible))
     const activeItem = layoutState.activeMenuItem;
     // console.log("testtttt....." + itemKey.value + " active item " + activeItem + '.  ' + layoutState.activeMenuItem)
-
+    cek(props.item.kode)
     isActiveMenu.value = activeItem === itemKey.value || activeItem ? activeItem.startsWith(itemKey.value + '-') : false;
 });
 
@@ -45,6 +46,18 @@ watch(
         isActiveMenu.value = newVal === itemKey.value || newVal.startsWith(itemKey.value + '-');
     }
 );
+const autStores = useAuthStore();
+const { getToken, currentUser } = autStores;
+const cek = async (kode) => {
+    //matikan dulu untuk cek menu
+    // if (kode === '12345') {
+    //     console.log("cek .BENAR..... " + kode + '  ' + await getToken() + JSON.stringify(currentUser))
+    //     props.item.visible = true
+    // } else {
+    //     props.item.visible = true
+    // }
+}
+
 
 function itemClick(event, item) {
     if (item.disabled) {

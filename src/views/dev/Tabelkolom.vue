@@ -155,7 +155,7 @@
                             <div class="flex flex-wrap gap-4">
                                 <div class="flex flex-col grow basis-0 gap-2">
                                     <label for="is_id" class="block font-bold mb-0">Is ID</label>
-                                    <Select id="is_id" v-model="item.is_id" :options="yesNo" optionLabel="name"
+                                    <Select id="is_id" v-model="item.is_id" :options="yesNoAdd" optionLabel="name"
                                         optionValue="code" placeholder="Select Project" class="w-full"></Select>
                                 </div>
                                 <div class="flex flex-col grow basis-0 gap-2">
@@ -214,6 +214,7 @@ const types = ref([
 ]);
 
 const yesNo = ref([{ name: 'Yes', code: 'Y' }, { name: 'No', code: 'N' }])
+const yesNoAdd = ref([{ name: 'Yes', code: 'Y' }, { name: 'No', code: 'N' }, { name: 'Add', code: 'A' }])
 const dropdownProjectItem = ref(null);
 const dropdownTableItem = ref()
 const dropdownTableItems = ref([])

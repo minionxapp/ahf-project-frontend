@@ -6,8 +6,9 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
     {
         label: 'Home',
+        kode: '12345',
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
-        { label: 'Logout', icon: 'pi pi-sign-out', to: '/logout', visible: true }
+        { label: 'Logout', icon: 'pi pi-sign-out', to: '/logout', visible: true, kode: '12345' }
         ]
     },
     {
@@ -24,7 +25,9 @@ const model = ref([
                     { label: 'Level', icon: 'pi pi-sort-alt-slash', to: { name: 'level' } },
                     { label: 'Tipe Training', icon: 'pi pi-briefcase', to: { name: 'tipetraining' } },
                     { label: 'Divisi', icon: 'pi pi-book', to: { name: 'divisi' } },
-                    { label: 'Departement', icon: 'pi pi-fw pi-car', to: { name: 'divisidept' } }
+                    { label: 'Departement', icon: 'pi pi-fw pi-car', to: { name: 'divisidept' } },
+                    { label: 'Menu', icon: 'pi pi-bars', to: { name: 'menu' } },
+                    { label: 'Kompetensi', icon: 'pi pi-fw pi-car', to: { name: 'kompetensi' } }
                 ]
             },
             {

@@ -110,7 +110,16 @@ const router = createRouter({
                     name: 'divisidept',
                     component: () => import('@/views/DivisiDeptView.vue')
                 },
-
+                {
+                    path: '/menu',
+                    name: 'menu',
+                    component: () => import('@/views/MenuView.vue')
+                },
+                {
+                    path: '/kompetensi',
+                    name: 'kompetensi',
+                    component: () => import('@/views/KompetensiView.vue')
+                },
                 // {
                 //     path: '/uikit/formlayout',
                 //     name: 'formlayout',

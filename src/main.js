@@ -9,6 +9,11 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 
+
+// Import PrimeFlex
+// import 'primeflex/primeflex.css';
+
+
 const app = createApp(App);
 const pinia = createPinia()
 app.use(router);

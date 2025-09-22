@@ -59,15 +59,47 @@ const submit = async () => {
                 }
             )
             result.value = data.data
+
         } catch (error) {
             console.log(error)
         }
-
+        console.log(result.value.addFileContent)
         await front()
     } else {
         alert("Project/Table belum dipilih")
     }
 }
+
+
+//ADD colom
+//membuat script tanpa membuat file
+const submitAdd = async () => {
+    if (dropdownTableItem.value && dropdownTableItem.value) {
+        const tableId = ((dropdownTableItem.value).id)
+        try {
+            const { data } = await custumFetch.get("/dev/schema/" + tableId + "?createFile=false",
+                {
+                    withCredentials: true,
+                    headers: {
+                        "X-API-TOKEN": await getToken()
+                    },
+                }
+            )
+            result.value = data.data
+            result.value.schema = data.data.addFileContent
+            result.value.model = data.data.newModelContent
+            // newModelContent
+
+        } catch (error) {
+            console.log(error)
+        }
+        console.log(result.value.addFileContent)
+        await front()
+    } else {
+        alert("Project/Table belum dipilih")
+    }
+}
+
 
 //membuat file 
 const submit2 = async () => {
@@ -152,6 +184,7 @@ const front = async () => {
                     <Button label="Back Script" :fluid="false" @click="submit()"></Button>
                     <Button label="Back File" :fluid="false" @click="submit2()"></Button>
                     <Button label="Front" :fluid="false" @click="front()"></Button>
+                    <Button label="Add" :fluid="false" @click="submitAdd()"></Button>
                 </div>
                 <Tabs value="0">
                     <TabList>
@@ -169,6 +202,8 @@ const front = async () => {
                         <Tab value="10">F_TABLE</Tab>
                         <Tab value="11">F_DIALOG</Tab>
                         <Tab value="12">F_FILE</Tab>
+                        <Tab value="21">||||||</Tab>
+                        <Tab value="22">Add Column</Tab>
 
                     </TabList>
                     <TabPanels>
@@ -259,6 +294,15 @@ const front = async () => {
                             <pre>
                             <code>
                                 {{ resultFront.index }}
+                            </code>
+                        </pre>
+                        </TabPanel>
+
+                        <!--  -->
+                        <TabPanel value="22">
+                            <pre>
+                            <code>
+                                {{ result.addFileContent }}
                             </code>
                         </pre>
                         </TabPanel>

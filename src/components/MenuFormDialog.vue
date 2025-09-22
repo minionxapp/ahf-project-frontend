@@ -1,5 +1,8 @@
+<!--Version V2
+MenuFormDialog.vue-->
+
 <template>
-    <Dialog :visible="visible" :style="{ width: '450px' }" :header="dialogHeader" :modal="true">
+    <Dialog :visible="visible" :style="{ width: '450px' }" :header="dialogHeader" :modal="true" :closable=false>
         <form @submit.prevent="handleSubmit">
             <div class="flex flex-col gap-6">
                 <AlertMessage v-if="errorAlert" :message="errorMsg" />
@@ -8,11 +11,9 @@
                         readonly="true" hidden />
                 </div>
                 <div>
-                    <label for="kode_jf" class="block font-bold mb-3">Kode Job Family</label>
-                    <!-- <InputText rows="5" id="kode_jf" v-model.trim="props.item.kode_jf" required="false" fluid /> -->
-                    <Select id="kode_jf" v-model="props.item.kode_jf" :options="jobfamilys" optionLabel="nama"
-                        optionValue="kode" placeholder="Job Family" class="w-full" @change="setNamaJF()"></Select>
-                    <small v-if="submitted && !props.item.kode_jf" class="text-red-500">kode_jf is required.</small>
+                    <label for="kode" class="block font-bold mb-3">Kode</label>
+                    <InputText rows="5" id="kode" v-model.trim="props.item.kode" required="false" fluid />
+                    <small v-if="submitted && !props.item.kode" class="text-red-500">kode is required.</small>
                 </div>
                 <div>
                     <label for="nama" class="block font-bold mb-3">Nama</label>
@@ -20,25 +21,19 @@
                     <small v-if="submitted && !props.item.nama" class="text-red-500">nama is required.</small>
                 </div>
                 <div>
-                    <label for="kode" class="block font-bold mb-3">Kode</label>
-                    <InputText rows="5" id="kode" v-model.trim="props.item.kode" required="false" fluid />
-                    <small v-if="submitted && !props.item.kode" class="text-red-500">kode is required.</small>
-                </div>
-
-
-                <div hidden>
-                    <label for="nama_jf" class="block font-bold mb-3">Nama Job Family</label>
-                    <InputText rows="5" id="nama_jf" v-model.trim="props.item.nama_jf" required="false" fluid
-                        readonly="true" />
-                    <small v-if="submitted && !props.item.nama_jf" class="text-red-500">nama_jf is
-                        required.</small>
+                    <label for="slug" class="block font-bold mb-3">Slug</label>
+                    <InputText rows="5" id="slug" v-model.trim="props.item.slug" required="false" fluid />
+                    <small v-if="submitted && !props.item.slug" class="text-red-500">slug is required.</small>
                 </div>
                 <div>
-                    <label for="aktive" class="block font-bold mb-3">Aktive</label>
-                    <!-- <InputText rows="5" id="aktive" v-model.trim="props.item.aktive" required="false" fluid /> -->
-                    <Select id="aktive" v-model="props.item.aktive" :options="yesNo" optionLabel="name"
-                        optionValue="code" placeholder="Aktive" class="w-full"></Select>
-                    <small v-if="submitted && !props.item.aktive" class="text-red-500">aktive is required.</small>
+                    <label for="icon" class="block font-bold mb-3">Icon</label>
+                    <InputText rows="5" id="icon" v-model.trim="props.item.icon" required="false" fluid />
+                    <small v-if="submitted && !props.item.icon" class="text-red-500">icon is required.</small>
+                </div>
+                <div>
+                    <label for="route" class="block font-bold mb-3">Route</label>
+                    <InputText rows="5" id="route" v-model.trim="props.item.route" required="false" fluid />
+                    <small v-if="submitted && !props.item.route" class="text-red-500">route is required.</small>
                 </div>
                 <div>
                     <label for="urutan" class="block font-bold mb-3">Urutan</label>
@@ -49,6 +44,17 @@
                 </div>
 
 
+                <div>
+                    <label for="aktive" class="block font-bold mb-3">Aktive</label>
+                    <InputText rows="5" id="aktive" v-model.trim="props.item.aktive" required="false" fluid />
+                    <small v-if="submitted && !props.item.aktive" class="text-red-500">aktive is required.</small>
+                </div>
+                <div>
+                    <label for="parent_menu" class="block font-bold mb-3">Parent_menu</label>
+                    <InputText rows="5" id="parent_menu" v-model.trim="props.item.parent_menu" required="false" fluid />
+                    <small v-if="submitted && !props.item.parent_menu" class="text-red-500">parent_menu is
+                        required.</small>
+                </div>
                 <div class="flex justify-content-end gap-2 mt-4">
                     <Button type="button" label="Cancel" severity="secondary" @click="closeDialog" />
                     <Button type="submit" label="Submit" />
@@ -70,15 +76,11 @@ const errorAlert = ref("")
 const errorMsg = ref(false)
 const item = ref({});
 
-const yesNo = ref([{ name: 'Yes', code: 'Y' }, { name: 'No', code: 'N' }])
+//const yesNo = ref([{ name: 'Yes', code: 'Y' }, { name: 'No', code: 'N' }])
 // Menerima props dari parent
 const props = defineProps({
     visible: Boolean,
-    item: Object,
-    jobfamilys: {
-        type: Array,
-        required: true
-    },
+    item: Object
 });
 
 //  Mendefinisikan event yang akan dikirim ke parent
@@ -94,7 +96,7 @@ const dialogHeader = ref(''); // Judul dialog (New/Edit)
 watch(() => props.item, (newItem) => {
     if (newItem) {
         formData.value = { ...newItem };
-        dialogHeader.value = newItem.id ? 'Edit Sub_job_family' : 'New Sub_job_family';
+        dialogHeader.value = newItem.id ? 'Edit Menu' : 'New Menu';
     }
 }, { immediate: true });
 
@@ -104,8 +106,6 @@ watch(() => props.visible, (newVal) => {
         submitted.value = false;
     }
 });
-
-
 
 const closeDialog = () => {
     // Panggil emit untuk memberitahu parent agar mengubah nilai visible menjadi false
@@ -119,15 +119,10 @@ const handleSubmit = () => {
     if (props.item.nama) {
         // Kirim event 'save' ke parent dengan data form
         emit('save', props.item);
-        closeDialog();
+        //closeDialog();
     }
 };
 
-const setNamaJF = async () => {
-    const foundJF = props.jobfamilys.find(jf => jf.kode === props.item.kode_jf)
-    props.item.nama_jf = foundJF.nama
-    // console.log(foundJF)
-}
 </script>
 
 
